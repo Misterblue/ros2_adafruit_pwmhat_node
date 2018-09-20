@@ -27,14 +27,13 @@ setup(
     packages        = [
     ],
     py_modules      = [
-        'ros2_adafruit_pwmhat_node'
     ],
     data_files      = [
     ],
     entry_points    = {
         'console_scripts': [
             'service = service:main'
-        ],
+        ]
     },
     zip_safe=True,
     dependency_links= [
@@ -47,5 +46,5 @@ setup(
 
     tests_require   = [
         'pytest'
-    ],
+    ]
 )
