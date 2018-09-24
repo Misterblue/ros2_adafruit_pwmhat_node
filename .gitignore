@@ -1,6 +1,5 @@
-# ros2-adafruit-pwmhat-node
+# colcon packaging directories
 install/
-build/
 log/
 
 # Byte-compiled / optimized / DLL files

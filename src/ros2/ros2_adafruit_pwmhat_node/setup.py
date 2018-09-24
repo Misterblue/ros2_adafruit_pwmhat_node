@@ -18,32 +18,32 @@ setup(
         'Topic :: Software Development',
         'Topic :: System :: Hardware',
     ],
-
     author          = 'Robert Adams',
     author_email    = 'misterblue@misterblue.com',
     maintainer      = 'Robert Adams',
     maintainer_email= 'misterblue@misterblue.com',
 
     packages        = [
-    ],
-    py_modules      = [
+        'ros2_adafruit_pwmhat_node'
     ],
     data_files      = [
-    ],
-    entry_points    = {
-        'console_scripts': [
-            'service = service:main'
-        ]
-    },
-    zip_safe=True,
-    dependency_links= [
-        'https://github.com/adafruit/Adafruit_Python_GPIO/tarball/master#egg=Adafruit-GPIO-0.6.5'
+       ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
+       ('share/' + package_name, ['package.xml'])
     ],
     install_requires= [
         'setuptools',
         'Adafruit-GPIO>=0.6.5'
     ],
+    dependency_links= [
+        'https://github.com/adafruit/Adafruit_Python_GPIO/tarball/master#egg=Adafruit-GPIO-0.6.5'
+    ],
 
+    entry_points    = {
+        'console_scripts': [
+            'service = src.ros2_adafruit_pwmhat_node:main'
+        ]
+    },
+    zip_safe=True,
     tests_require   = [
         'pytest'
     ]

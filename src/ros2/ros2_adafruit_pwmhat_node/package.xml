@@ -13,8 +13,11 @@
   <url type="website">https://wiki.github.com/misterblue/ros2_adafruit_pwmhat_node/</url>
   <url type="repository">https://github.com/misterblue/ros2_adafruit_pwmhat_node/</url>
 
+  <build_depend>ros2_adafruit_pwmhat_msgs</build_depend>
+
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>ros2_adafruit_pwmhat_msgs</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

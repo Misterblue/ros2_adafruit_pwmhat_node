@@ -1,0 +1,4 @@
+int8 chan
+float32 pulse_length
+---
+int32 error
