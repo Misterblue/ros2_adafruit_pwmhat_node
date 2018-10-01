@@ -32,7 +32,8 @@ setup(
     ],
     install_requires= [
         'setuptools',
-        'Adafruit-GPIO>=0.6.5'
+        'Adafruit-GPIO>=0.6.5',
+        'Adafruit_PCA9685'
     ],
     dependency_links= [
         'https://github.com/adafruit/Adafruit_Python_GPIO/tarball/master#egg=Adafruit-GPIO-0.6.5'
@@ -40,7 +41,7 @@ setup(
 
     entry_points    = {
         'console_scripts': [
-            'service = src.ros2_adafruit_pwmhat_node:main'
+            'service = ros2_adafruit_pwmhat_node:main'
         ]
     },
     zip_safe=True,
