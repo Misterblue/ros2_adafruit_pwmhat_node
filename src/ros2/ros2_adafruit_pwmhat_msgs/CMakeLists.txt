@@ -19,7 +19,8 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(
     ros2_adafruit_pwmhat_msgs
-    "srv/BasicPWMchannels.srv"
+    "srv/PWMPulseLength.srv"
+    "srv/PWMAngle.srv"
     DEPENDENCIES builtin_interfaces
 )
 

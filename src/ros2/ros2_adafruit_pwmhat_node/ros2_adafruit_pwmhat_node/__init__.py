@@ -19,25 +19,44 @@ from rclpy.node import Node
 
 import Adafruit_PCA9685
 
-from ros2_adafruit_pwmhat_msgs.srv import BasicPWMchannels
+from ros2_adafruit_pwmhat_msgs.srv import PWMPulseLength
+from ros2_adafruit_pwmhat_msgs.srv import PWMAngle
 
 class ROS2_Adafruit_pwmhat_node(Node):
 
     def __init__(self):
         super().__init__('ros2_adafruit_pwmhat_node')
-        self.srv = self.create_service(BasicPWMchannels, 'pwmhat/pulselength', self.basicpwmchannels_callback)
         self.pwm = Adafruit_PCA9685.PCA9685()
         # frequency can be from 40 to 1000
         self.pwm_frequency = 60
         self.pwm.set_pwm_freq(self.pwm_frequency)
 
-    def basicpwmchannels_callback(self, request, response):
-        # self.get_logger().info(f"Incoming request: chan={request.chan} pulse_length={request.pulse_length}")
+        self.srv = self.create_service(PWMPulseLength, 'pwmhat/pulselength', self.pulselength_callback)
+        self.srv = self.create_service(PWMAngle, 'pwmhat/angle', self.angle_callback)
+
+    def pulselength_callback(self, request, response):
         self.get_logger().info("Incoming request: chan=%s pulse_length=%s" % (request.chan, request.pulse_length) )
 
         self.set_pwm_by_pulse_length(request.chan, request.pulse_length)
         
         response.error = 0
+
+        return response
+
+    def angle_callback(self, request, response):
+        # set PWM based on angle
+        self.get_logger().info("Incoming request: chan=%s angle=%s" % (request.chan, request.angle) )
+
+        if request.angle >= -90 and request.angle <= 90:
+            angle = request.angle + 90
+
+            low_bound = 0.6
+            high_bound = 2.4
+            calc_pulse_length = (((high_bound - low_bound) / 180) * angle) + low_bound
+            self.set_pwm_by_pulse_length(request.chan, calc_pulse_length)
+            response.error = 0
+        else:
+            response.error = 1
 
         return response
 
