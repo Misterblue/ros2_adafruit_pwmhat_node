@@ -50,8 +50,8 @@ class ROS2_Adafruit_pwmhat_node(Node):
         if request.angle >= -90 and request.angle <= 90:
             angle = request.angle + 90
 
-            low_bound = 0.6
-            high_bound = 2.4
+            low_bound = 1.0  # 0.6
+            high_bound = 2.0 # 2.4
             calc_pulse_length = (((high_bound - low_bound) / 180) * angle) + low_bound
             self.set_pwm_by_pulse_length(request.chan, calc_pulse_length)
             response.error = 0
@@ -68,6 +68,7 @@ class ROS2_Adafruit_pwmhat_node(Node):
         conv_pulse_length = int((pulse_length * 1000) / pulse_scaler)
         conv_pin = int(pin)
         # pwm.set_pwm(channel, onTickTime, offTickTime) where on/off are within 0..4095
+        self.get_logger().info("set_pwm: pin=%s conv_pulse_length=%s" % (conv_pin, conv_pulse_length) )
         self.pwm.set_pwm(conv_pin, 0, conv_pulse_length)
 
 
