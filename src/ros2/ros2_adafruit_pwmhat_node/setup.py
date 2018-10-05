@@ -41,7 +41,7 @@ setup(
 
     entry_points    = {
         'console_scripts': [
-            'service = ros2_adafruit_pwmhat_node:main'
+            'service = ros2_adafruit_pwmhat_node.ros2_adafruit_pwmhat_node:main'
         ]
     },
     zip_safe=True,
