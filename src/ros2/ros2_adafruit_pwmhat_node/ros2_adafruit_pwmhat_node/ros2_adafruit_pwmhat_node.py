@@ -74,49 +74,49 @@ class ROS2_Adafruit_pwmhat_node(Node):
 
     def angle_callback(self, request):
         # set PWM based on channel name and angle
-        self.get_logger().info("PWMHat: chan/angle: chan=%s angle=%s"
+        self.get_logger().debug("PWMHat: chan/angle: chan=%s angle=%s"
                     % (request.chan, request.angle) )
         if request.chan in self.channels:
             pin = self.channels[request.chan]
             pulse_length = self.convert_angle_to_pulse_length(pin, request.angle_units, request.angle)
             self.set_pwm_by_pulse_length(pin, pulse_length)
         else:
-            self.get_logger().error("PWMHAt: chan/angle: channel does not exist: chan=%s, angle=%s"
+            self.get_logger().error("PWMHAT: chan/angle: channel does not exist: chan=%s, angle=%s"
                     % (request.chan, request.angle) )
         return
         
     def pinAngle_callback(self, request):
         # set PWM based on pin and angle
-        self.get_logger().info("PWMHat: pin/angle: pin=%s angle=%s"
+        self.get_logger().debug("PWMHat: pin/angle: pin=%s angle=%s"
                     % (request.pin, request.angle) )
-        if pin >= 0 and pin < len(self.pins):
+        if request.pin >= 0 and request.pin < len(self.pins):
             pulse_length = self.convert_angle_to_pulse_length(request.pin, request.angle_units, request.angle)
             self.set_pwm_by_pulse_length(request.pin, pulse_length)
         else:
-            self.get_logger().error("PWMHAt: pin/angle: pin out of range: pin=%s, angle=%s"
+            self.get_logger().error("PWMHAT: pin/angle: pin out of range: pin=%s, angle=%s"
                     % (request.pin, request.angle) )
         return
 
     def pulseLength_callback(self, request):
         # set PWM based on channel and pulse length
-        self.get_logger().info("PWMHat: chan/pulseLength: chan=%s pulse_length=%s"
+        self.get_logger().debug("PWMHat: chan/pulseLength: chan=%s pulse_length=%s"
                     % (request.chan, request.pulse_length) )
         if request.chan in self.channels:
             pin = self.channels[request.chan]
-            self.set_pwm_by_pulse_length(pin, request.pulseLength)
+            self.set_pwm_by_pulse_length(pin, request.pulse_length)
         else:
-            self.get_logger().error("PWMHAt: chan/pulseLength: channel does not exist: chan=%s, pulseLength=%s"
-                    % (request.chan, request.pulseLength) )
+            self.get_logger().error("PWMHAT: chan/pulseLength: channel does not exist: chan=%s, pulseLength=%s"
+                    % (request.chan, request.pulse_length) )
         return
 
     def pinPulseLength_callback(self, request):
         # set PWM based on pin number and pulse length
-        self.get_logger().info("PWMHAT: pin/pulseLength: pin=%s pulse_length=%s"
+        self.get_logger().debug("PWMHAT: pin/pulseLength: pin=%s pulse_length=%s"
                     % (request.pin, request.pulse_length) )
-        if pin >= 0 and pin < len(self.pins):
-            self.set_pwm_by_pulse_length(request.pin, request.pulseLength)
+        if request.pin >= 0 and request.pin < len(self.pins):
+            self.set_pwm_by_pulse_length(request.pin, request.pulse_length)
         else:
-            self.get_logger().error("PWMHAt: pin/pulseLength: pin out of range: pin=%s, angle=%s"
+            self.get_logger().error("PWMHAT: pin/pulseLength: pin out of range: pin=%s, angle=%s"
                     % (request.pin, request.angle) )
         return
 
@@ -125,7 +125,6 @@ class ROS2_Adafruit_pwmhat_node(Node):
         calc_pulse_length = 1.0
         conv_angle = angle
         if units == PWMAngle.RADIANS:
-            self.get_logger().info("PWMHAT: convertAngle: angle is RADIANS so converting to degrees")
             conv_angle = angle * (180 / 3.14159265)
 
         pinInfo = self.pins[pin]
@@ -133,13 +132,9 @@ class ROS2_Adafruit_pwmhat_node(Node):
         if conv_angle >= deviceType['range_degrees'][0] and conv_angle <= deviceType['range_degrees'][1]:
             # if angle is in range, adjust the range to be zero based
             conv_angle -= deviceType['range_degrees'][0]
-            self.get_logger().info("PWMHAT: convertAngle: angle=%s, conv_angle=%s" % (angle, conv_angle))
             calc_pulse_length = (deviceType['max_pulse_length'] - deviceType['min_pulse_length']) / 180
-            self.get_logger().info("PWMHAT: convertAngle: calc_pulse_length=%s" % (calc_pulse_length))
             calc_pulse_length *= conv_angle
-            self.get_logger().info("PWMHAT: convertAngle: calc_pulse_length=%s" % (calc_pulse_length))
             calc_pulse_length += deviceType['min_pulse_length']
-            self.get_logger().info("PWMHAT: convertAngle: calc_pulse_length=%s" % (calc_pulse_length))
         else:
             self.get_logger().error("PWMHat: Pulse length calc: angle out of bounds: pin=%s, angle=%s"
                     % (pin, angle) )
@@ -154,7 +149,7 @@ class ROS2_Adafruit_pwmhat_node(Node):
         conv_pulse_length = int((pulse_length * 1000) / pulse_scaler)
         conv_pin = int(pin)
         # pwm.set_pwm(channel, onTickTime, offTickTime) where on/off are within 0..4095
-        self.get_logger().info("set_pwm: pin=%s conv_pulse_length=%s" % (conv_pin, conv_pulse_length) )
+        self.get_logger().debug("set_pwm: pin=%s conv_pulse_length=%s" % (conv_pin, conv_pulse_length) )
         self.pwm.set_pwm(conv_pin, 0, conv_pulse_length)
 
 
