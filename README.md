@@ -13,7 +13,7 @@ When run on the Raspberry Pi 3 that has the PWMHAT, this node subscribes to the 
 
 The angle could be either degrees or radians and the '''angle-unit''' variable can be the constant "DEGREES" or "RADIANS" with the default being degrees if not specified.
 
-The stepping motor parameters are hard coded for the SG90 stepping motor which has a documented PWM pulse width from 1ms to 2ms but experimentation has shown that the real range for 180 degree movement is from 0.6ms to 2.4ms. The angle range parameters are for -90 degrees to +90 degrees. Other stepping motor defiitions can be added and someday there will be an external parameter file (see note at bottom about ROS2, parameters, and Python).
+The stepping motor parameters are hard coded for the SG90 stepping motor which has a documented PWM pulse width from 1ms to 2ms but experimentation has shown that the real range for 180 degree movement is from 0.6ms to 2.4ms. The angle range parameters are for -90 degrees to +90 degrees. Other stepping motor definitions can be added and someday there will be an external parameter file (see note at bottom about ROS2, parameters, and Python).
 
 ### Building
 
@@ -52,6 +52,15 @@ ros2 run ros2_adafruit_pwmhat_node service
 ```
 
 The namespace used in the topics (the "pwmhatter" listed in the 'topic's above) can be changed by adding parameters at the end of the "run" invocation line: "__ns:=namespace".
+
+Once the node is running, example messages:
+
+```
+ros2 topic pub -1 /pwmhatter/pulseLength ros2_adafruit_pwmhat_msgs/PWMPulseLength "{
+ 'chan': 'tilt', 'pulse_length': 1.5 }"
+ ros2 topic pub -1 /pwmhatter/pinAngle ros2_adafruit_pwmhat_msgs/PWMPinAngle "{ 'pin'
+: 8, 'angle': -10 }"
+```
 
 ### Notes
 
