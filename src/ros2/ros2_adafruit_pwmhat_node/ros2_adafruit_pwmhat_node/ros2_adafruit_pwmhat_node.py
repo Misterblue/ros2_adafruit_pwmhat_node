@@ -30,21 +30,27 @@ class ROS2_Adafruit_pwmhat_node(Node):
     def __init__(self):
         super().__init__('ros2_adafruit_pwmhat_node', namespace='pwmhatter')
 
+        self.param_pwm_frequency = int(self.get_parameter_or('pwm_frequency', 100))
+        self.param_pinAngle_topic = str(self.get_parameter_or('pinAngle_topic', 'pinAngle'))
+        self.param_angle_topic = str(self.get_parameter_or('angle_topic', 'angle'))
+        self.param_pinPulseLength_topic = str(self.get_parameter_or('pinPulseLength_topic', 'pinPulseLength'))
+        self.param_pulseLength_topic = str(self.get_parameter_or('pulseLength_topic', 'pulseLength'))
+
         self.pwm = Adafruit_PCA9685.PCA9685()
         # frequency can be from 40 to 1000
-        self.pwm_frequency = 100
+        self.pwm_frequency = self.param_pwm_frequency
         self.pwm.set_pwm_freq(self.pwm_frequency)
 
         # subscriptions for different message types (named, pins, angle)
         self.subs = []
         self.subs.append(self.create_subscription(
-                    PWMPinAngle, 'pinAngle', self.pinAngle_callback))
+                    PWMPinAngle, self.param_pinAngle_topic, self.pinAngle_callback))
         self.subs.append(self.create_subscription(
-                    PWMAngle, 'angle', self.angle_callback))
+                    PWMAngle, self.param_angle_topic, self.angle_callback))
         self.subs.append(self.create_subscription(
-                    PWMPinPulseLength, 'pinPulseLength', self.pinPulseLength_callback))
+                    PWMPinPulseLength, self.param_pinPulseLength_topic, self.pinPulseLength_callback))
         self.subs.append(self.create_subscription(
-                    PWMPulseLength, 'pulseLength', self.pulseLength_callback))
+                    PWMPulseLength, self.param_pulseLength_topic, self.pulseLength_callback))
 
         # THE FOLLOWING DATA WILL COME FROM PARAMETER FILES WHEN THAT WORKS FOR ROS2 AND PYTHON
 
@@ -152,6 +158,15 @@ class ROS2_Adafruit_pwmhat_node(Node):
         self.get_logger().debug("set_pwm: pin=%s conv_pulse_length=%s" % (conv_pin, conv_pulse_length) )
         self.pwm.set_pwm(conv_pin, 0, conv_pulse_length)
 
+    def get_parameter_or(self, param, default):
+        # Helper function to return value of a parameter or a default if not set
+        ret = None
+        param_desc = self.get_parameter(param)
+        if param_desc.type_== Parameter.Type.NOT_SET:
+            ret = default
+        else:
+            ret = param_desc.value
+        return ret
 
 def main(args=None):
     rclpy.init(args=args)
