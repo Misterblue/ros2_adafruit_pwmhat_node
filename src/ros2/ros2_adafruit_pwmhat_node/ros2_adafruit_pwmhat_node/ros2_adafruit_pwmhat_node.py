@@ -15,6 +15,7 @@
 import sys
 
 import rclpy
+from rclpy.parameter import Parameter
 from rclpy.node import Node
 
 import Adafruit_PCA9685
