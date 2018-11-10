@@ -31,27 +31,37 @@ class ROS2_Adafruit_pwmhat_node(Node):
     def __init__(self):
         super().__init__('ros2_adafruit_pwmhat_node', namespace='pwmhatter')
 
-        self.param_pwm_frequency = int(self.get_parameter_or('pwm_frequency', 100))
-        self.param_pinAngle_topic = str(self.get_parameter_or('pinAngle_topic', 'pinAngle'))
-        self.param_angle_topic = str(self.get_parameter_or('angle_topic', 'angle'))
-        self.param_pinPulseLength_topic = str(self.get_parameter_or('pinPulseLength_topic', 'pinPulseLength'))
-        self.param_pulseLength_topic = str(self.get_parameter_or('pulseLength_topic', 'pulseLength'))
+        self.set_parameter_defaults( [
+            ('pwm_frequency', Parameter.Type.INTEGER, 100),
+            ('pinAngle_topic', Parameter.Type.STRING, 'pinAngle'),
+            ('angle_topic', Parameter.Type.STRING, 'angle'),
+            ('pinPulseLength_topic', Parameter.Type.STRING, 'pinPulseLength'),
+            ('pulseLength_topic', Parameter.Type.STRING, 'pulseLength'),
+            ] )
 
         self.pwm = Adafruit_PCA9685.PCA9685()
         # frequency can be from 40 to 1000
-        self.pwm_frequency = self.param_pwm_frequency
+        self.pwm_frequency = self.get_parameter_value('pwm_frequency')
         self.pwm.set_pwm_freq(self.pwm_frequency)
 
         # subscriptions for different message types (named, pins, angle)
         self.subs = []
         self.subs.append(self.create_subscription(
-                    PWMPinAngle, self.param_pinAngle_topic, self.pinAngle_callback))
+                    PWMPinAngle,
+                    self.get_parameter_value('pinAngle_topic'),
+                    self.pinAngle_callback))
         self.subs.append(self.create_subscription(
-                    PWMAngle, self.param_angle_topic, self.angle_callback))
+                    PWMAngle,
+                    self.get_parameter_value('angle_topic'),
+                    self.angle_callback))
         self.subs.append(self.create_subscription(
-                    PWMPinPulseLength, self.param_pinPulseLength_topic, self.pinPulseLength_callback))
+                    PWMPinPulseLength,
+                    self.get_parameter_value('pinPulseLength_topic'),
+                    self.pinPulseLength_callback))
         self.subs.append(self.create_subscription(
-                    PWMPulseLength, self.param_pulseLength_topic, self.pulseLength_callback))
+                    PWMPulseLength,
+                    self.get_parameter_value('pulseLength_topic'),
+                    self.pulseLength_callback))
 
         # THE FOLLOWING DATA WILL COME FROM PARAMETER FILES WHEN THAT WORKS FOR ROS2 AND PYTHON
 
@@ -168,6 +178,38 @@ class ROS2_Adafruit_pwmhat_node(Node):
         else:
             ret = param_desc.value
         return ret
+
+    def get_parameter_value(self, param):
+        # Helper function to return value of a parameter
+        ret = None
+        param_desc = self.get_parameter(param)
+        if param_desc.type_== Parameter.Type.NOT_SET:
+            raise Exception('Fetch of parameter that does not exist: ' + param)
+        else:
+            ret = param_desc.value
+        return ret
+
+    def set_parameter_defaults(self, params):
+        # If a parameter has not been set externally, set the value to a default.
+        # Passed a list of "(parameterName, parameterType, defaultValue)" tuples.
+        parameters_to_set = []
+        for (pparam, ptype, pdefault) in params:
+            if not self.has_parameter(pparam):
+                parameters_to_set.append( Parameter(pparam, ptype, pdefault) )
+        if len(parameters_to_set) > 0:
+            self.set_parameters(parameters_to_set)
+
+    def parameter_set_if_set(self, param, set_function):
+        # If there is a parameter set, do set_function with the value
+        if self.has_parameter(param):
+            set_function(self.get_parameter_value(param))
+
+    def has_parameter(self, param):
+        # Return 'True' if a parameter by that name is specified
+        param_desc = self.get_parameter(param)
+        if param_desc.type_== Parameter.Type.NOT_SET:
+            return False
+        return True
 
 def main(args=None):
     rclpy.init(args=args)
